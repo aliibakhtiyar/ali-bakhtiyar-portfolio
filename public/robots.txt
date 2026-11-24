@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ali-bakhtiyar-portfolio.rockycanal8.chatgpt.site/sitemap.xml
