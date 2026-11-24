@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Check, CircleDot, CodeXml, Database, Github, Layers3, Send, Terminal } from 'lucide-react';
-import { github } from './data.js';
+import { Check, CircleDot, CodeXml, Database, Github, Layers3, Linkedin, Send, Terminal } from 'lucide-react';
+import { github, linkedin } from './data.js';
 import Stack from './Stack.jsx';
 import Work from './Work.jsx';
 
@@ -53,7 +53,10 @@ function Contact() {
   return <section id="contact" tabIndex={-1} className="section shell contact-grid" aria-labelledby="contact-title">
     <div className="section-heading"><p className="eyebrow">Contact</p><h2 id="contact-title">Let’s build<br/><em>something.</em></h2>
       <p>Have a project or opportunity in mind? Tell me what you’re working on.</p>
-      <a href={github} className="text-link contact-github" target="_blank" rel="noreferrer"><Github size={19}/> @aliibakhtiyar</a></div>
+      <div className="contact-socials">
+        <a href={github} className="text-link" target="_blank" rel="noreferrer"><Github size={19}/> @aliibakhtiyar</a>
+        <a href={linkedin} className="text-link" target="_blank" rel="noreferrer"><Linkedin size={19}/> LinkedIn</a>
+      </div></div>
     <form className="contact-form" onSubmit={submit} aria-busy={state.status === 'pending'}>
       <div className="form-row"><label>Name<input name="name" required maxLength={100} placeholder="Your name" autoComplete="name"/></label>
         <label>Email<input name="email" type="email" required maxLength={254} placeholder="you@example.com" autoComplete="email"/></label></div>

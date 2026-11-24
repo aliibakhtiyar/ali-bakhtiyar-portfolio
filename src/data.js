@@ -1,5 +1,6 @@
 const base='https://github.com/aliibakhtiyar/';
 export const github='https://github.com/aliibakhtiyar';
+export const linkedin='https://in.linkedin.com/in/ali-bakhtiyar-b224b229a';
 export const projects=[
  {name:'MediCall AI',repo:'medicall-ai',category:'AI',number:'01',theme:'medical',symbol:'✳',description:'A conversational AI application for doctor and appointment queries, with a React client, Express server and voice conversation mode.',stack:['React','Tailwind CSS','Express','MongoDB','Vapi','Groq'],features:['React client and Node.js API','Doctor and appointment chat interface','Live voice conversation and transcription flow','Patient token and authentication logic'],source:'README, client/server package manifests and client App.jsx'},
  {name:'Student Platform',repo:'student-project-main',category:'Full stack',number:'02',theme:'student',symbol:'◈',description:'A MERN student platform documented around academic resources, career opportunities and campus community features.',stack:['React','Node.js','MongoDB','Tailwind CSS','Socket.IO'],features:['Student authentication and dashboard','Hackathons, events and internships','AI student assistant, leaderboards, PvP and study rooms'],source:'Repository README, frontend package manifest and App.jsx'},

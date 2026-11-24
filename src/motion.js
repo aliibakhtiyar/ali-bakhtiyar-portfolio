@@ -18,11 +18,6 @@ export function moveCards(element, state) {
 export function animateHero(root) {
   const context = gsap.context(() => {
     gsap.from('.intro', { y: 11, opacity: 0, duration: 0.4, stagger: 0.055, ease: 'power2.out', clearProps: 'opacity,transform' });
-    const hero = root.querySelector('.hero');
-    gsap.to('.hero-art', {
-      yPercent: 6, scale: 1.035, ease: 'none',
-      scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 0.55 },
-    });
   }, root);
   const devices = gsap.matchMedia();
   devices.add('(hover: hover) and (pointer: fine)', () => {

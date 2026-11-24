@@ -1,17 +1,11 @@
-import { Component, lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Braces, Database, PanelsTopLeft, Workflow } from 'lucide-react';
 import { buildLayers } from './layers.js';
 import { useMedia, useNear } from './viewport.js';
+import SceneBoundary from './SceneBoundary.jsx';
 
 const Scene = lazy(() => import('./Scene.jsx'));
 const icons = [PanelsTopLeft, Braces, Database, Workflow];
-
-class SceneBoundary extends Component {
-  state = { failed: false };
-  static getDerivedStateFromError() { return { failed: true }; }
-  componentDidCatch() { this.props.onFailure(); }
-  render() { return this.state.failed ? null : this.props.children; }
-}
 
 export default function Architecture({ motion, selected = null }) {
   const stage = useRef(null);

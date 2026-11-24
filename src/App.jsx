@@ -1,7 +1,8 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { Github, Menu, Pause, Play, X } from 'lucide-react';
+import { Github, Linkedin, Menu, Pause, Play, X } from 'lucide-react';
 import { useMedia } from './viewport.js';
-import { github } from './data.js';
+import { github, linkedin } from './data.js';
+import HeroOrb from './HeroOrb.jsx';
 
 const Lower = lazy(() => import('./Lower.jsx'));
 const pages = [['Work', 'work'], ['Stack', 'skills'], ['About', 'about'], ['Contact', 'contact']];
@@ -31,7 +32,10 @@ function MobileMenu({ dialog }) {
     <nav aria-label="Mobile navigation">
       {pages.map(([label, id]) => <a key={id} href={'#' + id} onClick={(event) => follow(event, id)}>{label}</a>)}
     </nav>
-    <a className="mobile-github" href={github} target="_blank" rel="noreferrer"><Github size={19}/> GitHub profile</a>
+    <div className="mobile-socials">
+      <a className="mobile-github" href={github} target="_blank" rel="noreferrer"><Github size={19}/> GitHub profile</a>
+      <a className="mobile-github" href={linkedin} target="_blank" rel="noreferrer"><Linkedin size={19}/> LinkedIn</a>
+    </div>
   </dialog>;
 }
 
@@ -72,10 +76,8 @@ export default function App() {
     <MobileMenu dialog={menu}/>
     <main id="main" tabIndex={-1}>
       <section id="home" className="hero shell" aria-labelledby="hero-title">
-        <div className="hero-media" aria-hidden="true">
-          <div className="hero-art"><img src="/gallery/titanium-hero.jpg" width="1440" height="960" alt="" fetchPriority="high"/></div>
-          <div className="hero-light"/>
-        </div>
+        <div className="hero-media" aria-hidden="true"/>
+        <HeroOrb motion={motion}/>
         <div className="hero-copy">
           <p className="hero-role intro">Full-stack developer</p>
           <h1 id="hero-title" className="hero-name intro">Ali Bakhtiyar</h1>
@@ -91,6 +93,6 @@ export default function App() {
       </section>
       <Suspense fallback={<div className="shell loading-content" role="status">Loading portfolio…</div>}><Lower motion={motion}/></Suspense>
     </main>
-    <footer className="shell footer"><Brand/><a href={github} target="_blank" rel="noreferrer"><Github size={17}/> GitHub</a><a href="#home">Back to top</a></footer>
+    <footer className="shell footer"><Brand/><a href={github} target="_blank" rel="noreferrer"><Github size={17}/> GitHub</a><a href={linkedin} target="_blank" rel="noreferrer"><Linkedin size={17}/> LinkedIn</a><a href="#home">Back to top</a></footer>
   </div>;
 }
