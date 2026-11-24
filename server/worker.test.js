@@ -11,14 +11,14 @@ function request(body, headers = {}) {
   return new Request(url, { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body) });
 }
 
-test('worker serves HTML and the hero image with the correct content type', async () => {
+test('worker serves HTML and the variable font with the correct content type', async () => {
   const page = await worker.fetch(new Request('http://localhost/'), {});
   assert.equal(page.status, 200);
   assert.match(await page.text(), /Ali Bakhtiyar/);
-  const image = await worker.fetch(new Request('http://localhost/sculpture.jpg'), {});
-  assert.equal(image.headers.get('Content-Type'), 'image/jpeg');
-  const signature = new Uint8Array(await image.arrayBuffer()).slice(0, 2);
-  assert.deepEqual([...signature], [255, 216]);
+  const font = await worker.fetch(new Request('http://localhost/fonts/manrope.ttf'), {});
+  assert.equal(font.headers.get('Content-Type'), 'font/ttf');
+  const signature = new Uint8Array(await font.arrayBuffer()).slice(0, 4);
+  assert.deepEqual([...signature], [0, 1, 0, 0]);
   assert.equal((await worker.fetch(new Request('http://localhost/missing'), {})).status, 404);
 });
 

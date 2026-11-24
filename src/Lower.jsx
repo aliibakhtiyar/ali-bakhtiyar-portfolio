@@ -1,12 +1,9 @@
-import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { AudioLines, BookOpen, Braces, Check, CircleDot, CodeXml, Database, Github, Layers3, LayoutGrid, Send, ShoppingBag, Sparkles, Terminal, Utensils, X } from 'lucide-react';
-import { github, projects, skills } from './data.js';
-import { SceneBoundary } from './App.jsx';
-import { useMedia, useNear } from './viewport.js';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { AudioLines, BookOpen, Check, CircleDot, CodeXml, Database, Github, Layers3, LayoutGrid, Send, ShoppingBag, Sparkles, Terminal, Utensils, X } from 'lucide-react';
+import { github, projects } from './data.js';
+import Stack from './Stack.jsx';
 
-const Universe = lazy(() => import('./Universe.jsx'));
 const filters = ['All', 'AI', 'Full stack', 'Frontend', 'Archive'];
-const categories = ['All', 'Frontend', 'Backend', 'Creative', 'Programming', 'Tools', 'Learning'];
 const marks = { medical: AudioLines, student: LayoutGrid, review: Sparkles, laundry: Layers3, shop: ShoppingBag, food: Utensils, book: BookOpen };
 
 function ProjectArt({ project }) {
@@ -105,46 +102,6 @@ function Work({ motion }) {
   </section>;
 }
 
-function Stack({ motion }) {
-  const stage = useRef(null);
-  const close = useNear(stage);
-  const active = useNear(stage, '0px');
-  const compact = useMedia('(max-width: 720px)');
-  const [loaded, setLoaded] = useState(false);
-  const [group, setGroup] = useState('All');
-  const [name, setName] = useState('React');
-  const entries = skills.filter(([, category]) => group === 'All' || category === group);
-  const selected = skills.find(([skill]) => skill === name);
-
-  useEffect(() => { if (close && motion && !compact) setLoaded(true); }, [close, motion, compact]);
-  function pick(skill) {
-    if (!entries.some(([item]) => item === skill)) setGroup('All');
-    setName(skill);
-  }
-  function selectGroup(category) {
-    const next = skills.find(([skill, entryGroup]) => skill === name && (category === 'All' || category === entryGroup))
-      ?? skills.find(([, entryGroup]) => category === entryGroup);
-    setGroup(category);
-    setName(next[0]);
-  }
-
-  const fallback = <div className="network-fallback" aria-hidden="true"><span/><span/><span/><CodeXml size={63} strokeWidth={1}/></div>;
-  return <section id="skills" className="section shell" aria-labelledby="stack-title">
-    <div className="section-heading"><p className="eyebrow">Technology explorer</p><h2 id="stack-title">Tools of the <em>trade.</em></h2></div>
-    <div className="stack-grid">
-      <div className="network" ref={stage}>
-        <div className="stage-grid" aria-hidden="true"/>
-        {loaded && motion && !compact ? <SceneBoundary fallback={fallback}><Suspense fallback={fallback}><Universe active={active} selected={name} onPick={pick} fallback={fallback}/></Suspense></SceneBoundary> : fallback}
-      </div>
-      <div className="stack-panel">
-        <label className="select-label">Technology category <select value={group} onChange={(event) => selectGroup(event.target.value)}>{categories.map((category) => <option key={category}>{category}</option>)}</select></label>
-        <div className="skill-description" aria-live="polite"><span className="eyebrow">{selected[1] === 'Learning' ? 'Currently learning' : selected[1]}</span><h3>{name}</h3><p>{selected[2]}</p></div>
-        <div className="tags skill-pills" role="group" aria-label="Choose a technology">{entries.map(([skill]) => <button type="button" key={skill} aria-pressed={skill === name} onClick={() => setName(skill)}>{skill}{skill === 'Next.js' && <small>Learning</small>}</button>)}</div>
-      </div>
-    </div>
-  </section>;
-}
-
 const workflow = [
   [CodeXml, 'Interface', 'Build responsive pages and interactions with React, CSS, and GSAP.'],
   [Layers3, 'Application', 'Connect the interface to Express APIs and authentication flows.'],
@@ -208,5 +165,17 @@ function Contact() {
 }
 
 export default function Lower({ motion }) {
-  return <><Work motion={motion}/><Stack motion={motion}/><About/><Contact/></>;
+  const content = useRef(null);
+
+  useEffect(() => {
+    if (!motion) return;
+    let dispose;
+    let cancelled = false;
+    import('./motion.js').then(({ revealSections }) => {
+      if (!cancelled) dispose = revealSections(content.current);
+    }).catch(() => {});
+    return () => { cancelled = true; dispose?.(); };
+  }, [motion]);
+
+  return <div ref={content}><Stack motion={motion}/><Work motion={motion}/><About/><Contact/></div>;
 }

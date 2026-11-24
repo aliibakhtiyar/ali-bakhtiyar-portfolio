@@ -6,6 +6,7 @@ const types = {
   '.css': 'text/css; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
   '.jpg': 'image/jpeg',
+  '.ttf': 'font/ttf',
   '.svg': 'image/svg+xml',
   '.txt': 'text/plain; charset=utf-8',
   '.xml': 'application/xml; charset=utf-8',
@@ -21,7 +22,7 @@ async function collect(directory, prefix = '') {
     }
     const extension = extname(entry.name);
     if (!types[extension]) throw new Error('Unknown asset type ' + extension);
-    const binary = extension === '.jpg';
+    const binary = extension === '.ttf' || extension === '.jpg';
     assets[name] = [types[extension], binary, await readFile(path, binary ? 'base64' : 'utf8')];
   }
 }
