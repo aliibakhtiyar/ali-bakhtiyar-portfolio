@@ -44,7 +44,7 @@ export default function Stack({ motion }) {
     return () => { cancelled = true; dispose?.(); };
   }, [motion]);
 
-  return <section id="skills" className="section shell stack-section" aria-labelledby="stack-title">
+  return <section id="skills" tabIndex={-1} className="section shell stack-section" aria-labelledby="stack-title">
     <div className="section-heading split-heading">
       <div><p className="eyebrow">Technology stack</p><h2 id="stack-title">How I build.</h2></div>
       <p>Scroll through each layer to see what it does and where I’ve used it.</p>

@@ -1,6 +1,6 @@
 # Ali Bakhtiyar · Creative Full Stack Developer
 
-A React and Vite portfolio with a Three.js application architecture model, a scroll-linked technology walkthrough, and a GitHub-backed project showcase. The Site deploys as a Cloudflare Worker and keeps contact submissions in an owner-managed D1 database. The original Express/SMTP entry point is also available for local self-hosting.
+A React and Vite portfolio with a Three.js application architecture model, a scroll-linked technology walkthrough, and a responsive, illustrated GitHub project gallery. The Site deploys as a Cloudflare Worker and keeps contact submissions in an owner-managed D1 database. The original Express/SMTP entry point is also available for local self-hosting.
 
 ## Run locally on Windows
 
@@ -21,6 +21,6 @@ Sites provisions the `DB` binding and runs the migration in `drizzle/`. Every su
 
 ## Evidence and performance
 
-Featured work links to the developer's public repositories. The student platform uses the title supported by its README. Project card artwork is illustrative. The React Three Fiber scenes and animation engine are loaded separately from the main app. Scenes stop updating offscreen, and a CSS architecture diagram remains available for reduced motion or unavailable WebGL. The 3D model uses procedural geometry. Its four layers highlight alongside the technology explanations as you scroll. The hero buttons use an adaptation of the Shery.js magnetic hover effect with the existing GSAP dependency. Manrope is bundled locally. See [third-party notices](THIRD_PARTY_NOTICES.md).
+Featured work links to the developer's public repositories. The student platform uses the title supported by its README. The original project cover artwork is illustrative. Open any cover for repository highlights and the source link. The React Three Fiber scenes and animation engine are loaded separately from the main app. Scenes stop updating offscreen, and a CSS architecture diagram remains available for reduced motion or unavailable WebGL. The 3D model uses procedural geometry. Its four layers highlight alongside the technology explanations as you scroll. The hero buttons use an adaptation of the Shery.js magnetic hover effect with the existing GSAP dependency. Manrope is bundled locally. See [third-party notices](THIRD_PARTY_NOTICES.md).
 
 A local SQLite smoke test exercises the same production Worker entry point for static assets, validation, persistence, and rate limiting.

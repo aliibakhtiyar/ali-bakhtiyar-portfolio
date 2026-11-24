@@ -1,106 +1,8 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { AudioLines, BookOpen, Check, CircleDot, CodeXml, Database, Github, Layers3, LayoutGrid, Send, ShoppingBag, Sparkles, Terminal, Utensils, X } from 'lucide-react';
-import { github, projects } from './data.js';
+import { useEffect, useRef, useState } from 'react';
+import { Check, CircleDot, CodeXml, Database, Github, Layers3, Send, Terminal } from 'lucide-react';
+import { github } from './data.js';
 import Stack from './Stack.jsx';
-
-const filters = ['All', 'AI', 'Full stack', 'Frontend', 'Archive'];
-const marks = { medical: AudioLines, student: LayoutGrid, review: Sparkles, laundry: Layers3, shop: ShoppingBag, food: Utensils, book: BookOpen };
-
-function ProjectArt({ project }) {
-  const Mark = marks[project.theme] ?? CodeXml;
-  return <div className={'project-art ' + project.theme} aria-hidden="true">
-    <div className="art-grid"/>
-    <div className="art-glow"/>
-    <div className="art-render">
-      <div className="mock-top"><i/><i/><i/><span>{project.name}</span></div>
-      <div className="mock-main">
-        <div className="mock-rail"><i/><i/><i/><i/></div>
-        <div className="mock-content"><div className="mock-mark"><Mark strokeWidth={1.35}/></div><div className="mock-row"><i/><i/><i/><i/><i/><i/><i/><i/><i/></div><div className="mock-lines"><i/><i/></div></div>
-      </div>
-    </div>
-  </div>;
-}
-
-function Card({ project, onOpen, motion }) {
-  const card = useRef(null);
-  function tilt(event) {
-    if (!motion || event.pointerType !== 'mouse') return;
-    const bounds = event.currentTarget.getBoundingClientRect();
-    card.current.style.setProperty('--rx', ((0.5 - (event.clientY - bounds.top) / bounds.height) * 8) + 'deg');
-    card.current.style.setProperty('--ry', (((event.clientX - bounds.left) / bounds.width - 0.5) * 10) + 'deg');
-  }
-  function reset() {
-    card.current.style.removeProperty('--rx');
-    card.current.style.removeProperty('--ry');
-  }
-  return <article className="project-card" ref={card} onPointerMove={tilt} onPointerLeave={reset}>
-    <button type="button" className="project-image" onClick={() => onOpen(project)} aria-label={'View ' + project.name + ' details'}><ProjectArt project={project}/></button>
-    <div className="project-copy">
-      <div className="project-meta"><span>{project.category}</span><a href={project.url} target="_blank" rel="noreferrer" aria-label={project.name + ' source on GitHub'}><Github size={19}/></a></div>
-      <h3><button type="button" onClick={() => onOpen(project)}>{project.name}</button></h3>
-      <p>{project.description}</p>
-      <div className="tags">{project.stack.slice(0, 4).map((item) => <span key={item}>{item}</span>)}</div>
-    </div>
-  </article>;
-}
-
-function ProjectDialog({ project, onClose }) {
-  const dialog = useRef(null);
-  useEffect(() => {
-    const element = dialog.current;
-    if (project && !element.open) element.showModal();
-    if (!project && element.open) element.close();
-  }, [project]);
-  return <dialog ref={dialog} className="dialog" aria-labelledby="project-title" onClose={onClose} onClick={(event) => { if (event.target === event.currentTarget) onClose(); }}>
-    {project && <div className="dialog-content">
-      <button type="button" autoFocus className="icon-button dialog-close" onClick={onClose} aria-label="Close project"><X size={20}/></button>
-      <ProjectArt project={project}/>
-      <div className="dialog-copy"><p className="eyebrow">{project.category} · Portfolio illustration</p><h2 id="project-title">{project.name}</h2>
-      <p>{project.description}</p><h3>Repository highlights</h3><ul>{project.features.map((feature) => <li key={feature}>{feature}</li>)}</ul>
-      <div className="tags">{project.stack.map((item) => <span key={item}>{item}</span>)}</div>
-      <a className="button primary" href={project.url} target="_blank" rel="noreferrer"><Github size={17}/> View source</a></div>
-    </div>}
-  </dialog>;
-}
-
-function Work({ motion }) {
-  const [category, setCategory] = useState('All');
-  const [project, setProject] = useState(null);
-  const [expanded, setExpanded] = useState(false);
-  const grid = useRef(null);
-  const animation = useRef(null);
-  const snapshot = useRef(null);
-  const motionTools = useRef(null);
-
-  useEffect(() => {
-    if (motion) import('./motion.js').then((tools) => { motionTools.current = tools; }).catch(() => {});
-    return () => { animation.current?.progress(1); snapshot.current = null; };
-  }, [motion]);
-
-  function changeFilter(next) {
-    if (next === category) return;
-    animation.current?.progress(1);
-    if (motion && motionTools.current) snapshot.current = motionTools.current.captureCards(grid.current);
-    setCategory(next);
-  }
-  useLayoutEffect(() => {
-    if (!snapshot.current) return;
-    animation.current = motionTools.current.moveCards(grid.current, snapshot.current);
-    snapshot.current = null;
-  }, [category]);
-
-  const results = projects.filter((item) => category === 'All' || item.category === category);
-  const shown = category === 'All' && !expanded ? results.slice(0, 4) : results;
-
-  return <section id="work" className="shell section work" aria-labelledby="work-title">
-    <div className="section-heading split-heading"><div><p className="eyebrow">Portfolio</p><h2 id="work-title">Selected <em>work.</em></h2></div><p>Voice AI, campus tools, and full-stack apps. Each project links to its public source.</p></div>
-    <div className="filter-row" role="group" aria-label="Filter projects">{filters.map((filter) => <button type="button" key={filter} aria-pressed={category === filter} onClick={() => changeFilter(filter)}>{filter}</button>)}</div>
-    <div className="project-grid" ref={grid}>{shown.map((item) => <Card key={item.repo} project={item} onOpen={setProject} motion={motion}/>)}</div>
-    <div className="work-controls">{category === 'All' && <button type="button" className="button secondary" onClick={(event) => { if (expanded) { event.currentTarget.blur(); document.querySelector('#work-title').scrollIntoView({ block: 'center' }); } setExpanded(!expanded); }}>{expanded ? 'Show fewer projects' : 'Show more projects'}</button>}
-      <a className="text-link" href={github + '?tab=repositories'} target="_blank" rel="noreferrer"><Github size={18}/> All public repositories</a></div>
-    <ProjectDialog project={project} onClose={() => setProject(null)}/>
-  </section>;
-}
+import Work from './Work.jsx';
 
 const workflow = [
   [CodeXml, 'Interface', 'Build responsive pages and interactions with React, CSS, and GSAP.'],
@@ -111,7 +13,7 @@ const workflow = [
 
 function About() {
   const [active, setActive] = useState(0);
-  return <section id="about" className="section shell about-grid" aria-labelledby="about-title">
+  return <section id="about" tabIndex={-1} className="section shell about-grid" aria-labelledby="about-title">
     <div className="section-heading"><p className="eyebrow">About me</p><h2 id="about-title">The interface.<br/><em>And what’s behind it.</em></h2>
       <p>I’m Ali, a full-stack developer working with React, Node.js, Express, and MongoDB. I like building responsive interfaces and carrying a feature through to the API and data model that make it work.</p>
       <p>I use JavaScript, C++, and Python for application development and problem solving. I’m also exploring how to put AI into everyday workflows, and I’m currently learning Next.js.</p></div>
@@ -148,7 +50,7 @@ function Contact() {
       inFlight.current = false;
     }
   }
-  return <section id="contact" className="section shell contact-grid" aria-labelledby="contact-title">
+  return <section id="contact" tabIndex={-1} className="section shell contact-grid" aria-labelledby="contact-title">
     <div className="section-heading"><p className="eyebrow">Contact</p><h2 id="contact-title">Let’s build<br/><em>something.</em></h2>
       <p>Have a project or opportunity in mind? Tell me what you’re working on.</p>
       <a href={github} className="text-link contact-github" target="_blank" rel="noreferrer"><Github size={19}/> @aliibakhtiyar</a></div>
@@ -177,5 +79,5 @@ export default function Lower({ motion }) {
     return () => { cancelled = true; dispose?.(); };
   }, [motion]);
 
-  return <div ref={content}><Stack motion={motion}/><Work motion={motion}/><About/><Contact/></div>;
+  return <div ref={content}><Work motion={motion}/><Stack motion={motion}/><About/><Contact/></div>;
 }
