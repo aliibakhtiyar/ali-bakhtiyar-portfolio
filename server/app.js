@@ -13,6 +13,22 @@ export function createApp({ inbox, env = process.env } = {}) {
   const app = express();
   const onRender = env.RENDER === 'true';
   const siteUrl = env.SITE_URL || env.RENDER_EXTERNAL_URL;
+  const publicOrigins = new Set();
+  if (onRender || env.NODE_ENV === 'production') {
+    for (const value of [env.SITE_URL, env.RENDER_EXTERNAL_URL]) {
+      const url = value ? URL.parse(value) : null;
+      if (url?.protocol === 'https:') publicOrigins.add(url.origin);
+    }
+  }
+
+  function isSameOrigin(req) {
+    const site = req.get('sec-fetch-site');
+    const origin = req.get('origin');
+    if (!origin || (site && site !== 'same-origin')) return false;
+    return publicOrigins.size
+      ? publicOrigins.has(origin)
+      : origin === req.protocol + '://' + req.get('host');
+  }
   const smtp = env.SMTP_URL && env.SMTP_FROM && env.CONTACT_TO
     ? nodemailer.createTransport(env.SMTP_URL) : null;
 
@@ -34,7 +50,7 @@ export function createApp({ inbox, env = process.env } = {}) {
 
   app.get('/api/health', (_req, res) => res.json({ ok: true }));
   app.use('/api/admin', createAdminRouter({
-    inbox, password: env.ADMIN_PASSWORD, secure: onRender || env.NODE_ENV === 'production',
+    inbox, password: env.ADMIN_PASSWORD, isSameOrigin, secure: onRender || env.NODE_ENV === 'production',
   }));
 
   app.post('/api/contact', rateLimit({
@@ -45,7 +61,7 @@ export function createApp({ inbox, env = process.env } = {}) {
     message: { ok: false, message: 'Too many attempts. Please try again later.' },
   }), async (req, res) => {
     const origin = req.get('origin');
-    if (origin && origin !== req.protocol + '://' + req.get('host')) {
+    if (origin && !isSameOrigin(req)) {
       return res.status(403).json({ ok: false, message: 'Open the portfolio directly to send a message.' });
     }
     const result = validateContact(req.body);

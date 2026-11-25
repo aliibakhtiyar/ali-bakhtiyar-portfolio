@@ -41,7 +41,11 @@ async function setup(t, options = {}) {
   const dir = process.platform === 'win32' ? null : await mkdtemp(join(tmpdir(), 'portfolio-admin-'));
   const socket = dir ? join(dir, 'app.sock') : '\\\\.\\pipe\\portfolio-' + randomUUID();
   const inbox = options.inbox ?? memoryInbox();
+  const onRender = options.env?.RENDER !== false;
   const server = http.createServer(createApp({ inbox, env: { RENDER: 'true', ADMIN_PASSWORD: password, ...options.env } }));
+  if (!onRender) server.prependListener('request', (req) => {
+    Object.defineProperty(req.socket, 'remoteAddress', { value: '127.0.0.1' });
+  });
   await new Promise((resolve, reject) => {
     server.once('error', reject);
     server.listen(socket, resolve);
@@ -57,7 +61,8 @@ async function setup(t, options = {}) {
       const req = http.request({
         socketPath: socket, path: route, method,
         headers: {
-          host: 'portfolio.test', 'x-forwarded-proto': 'https', 'x-forwarded-for': '192.0.2.41',
+          host: 'portfolio.test',
+          ...(onRender ? { 'x-forwarded-proto': 'https', 'x-forwarded-for': '192.0.2.41' } : {}),
           ...(payload ? { 'content-type': 'application/json', 'content-length': Buffer.byteLength(payload), origin } : {}),
           ...headers,
         },
@@ -125,3 +130,43 @@ test('admin HTML loads directly and disables indexing and caching', async (t) =>
   assert.equal(page.headers['cache-control'], 'no-store');
   assert.equal((await request('/api/admin/session')).status, 503);
 });
+
+test('Render accepts its public origins even when the proxy changes the Host header', async (t) => {
+  const publicOrigin = 'https://portfolio-example.onrender.com';
+  const customOrigin = 'https://portfolio.example';
+  const { request } = await setup(t, { env: {
+    RENDER_EXTERNAL_URL: publicOrigin,
+    SITE_URL: customOrigin + '/',
+  } });
+  const proxy = { host: 'internal-portfolio:10000', 'x-forwarded-proto': 'http', 'sec-fetch-site': 'same-origin' };
+
+  for (const origin of [publicOrigin, customOrigin]) {
+    const headers = { ...proxy, origin };
+    const login = await request('/api/admin/login', { method: 'POST', body: { password }, headers });
+    assert.equal(login.status, 200);
+    const cookie = login.headers['set-cookie'][0].split(';')[0];
+    assert.equal((await request('/api/admin/logout', { method: 'POST', body: {}, headers: { ...headers, cookie } })).status, 200);
+    assert.equal((await request('/api/contact', { method: 'POST', body: sample, headers })).status, 201);
+  }
+
+  for (const headers of [
+    { ...proxy, origin: 'https://unrelated.example', 'x-forwarded-host': 'unrelated.example' },
+    { ...proxy, origin: 'null' },
+    { ...proxy, origin: publicOrigin, 'sec-fetch-site': 'cross-site' },
+  ]) {
+    assert.equal((await request('/api/admin/login', { method: 'POST', body: { password }, headers })).status, 403);
+    assert.equal((await request('/api/contact', { method: 'POST', body: sample, headers })).status, 403);
+  }
+});
+
+test('local admin login works on the same origin with SITE_URL unset', async (t) => {
+  const { request } = await setup(t, { env: { RENDER: false } });
+  const headers = {
+    host: 'localhost:8787', origin: 'http://localhost:8787',
+    'x-forwarded-proto': 'http', 'sec-fetch-site': 'same-origin',
+  };
+  const login = await request('/api/admin/login', { method: 'POST', body: { password }, headers });
+  assert.equal(login.status, 200);
+  assert.match(login.headers['set-cookie'][0], /^portfolio-admin=/);
+});
+

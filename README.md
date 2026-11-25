@@ -37,7 +37,7 @@ You can use the included `render.yaml` through **New → Blueprint**, or create 
 | Start command | `npm start` |
 | Health check path | `/api/health` |
 
-Set `MONGODB_URI`, `MONGODB_DB` (default `portfolio`), and `ADMIN_PASSWORD` in the Render dashboard. Render supplies the server port and public URL. Set `SITE_URL` if you want to use a custom public domain. After deployment, verify the public contact form and sign in at `/admin` over HTTPS.
+Set `MONGODB_URI`, `MONGODB_DB` (default `portfolio`), and `ADMIN_PASSWORD` in the Render dashboard. Render supplies the server port and public URL. For a custom domain, set `SITE_URL` to the full HTTPS origin, for example `https://portfolio.example.com`. Use the origin without `/admin`. The default Render URL is detected automatically. After deployment, verify the public contact form and sign in at `/admin` over HTTPS.
 
 References: [Render Express deployment](https://render.com/docs/deploy-node-express-app) and [Atlas network access from Render](https://render.com/docs/connect-to-mongodb-atlas).
 

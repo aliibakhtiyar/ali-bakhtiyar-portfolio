@@ -6,7 +6,7 @@ const sessionLifetime = 8 * 60 * 60_000;
 const messageId = /^[a-f0-9]{24}$/i;
 const digest = (value) => createHash('sha256').update(value).digest();
 
-export function createAdminRouter({ inbox, password, secure }) {
+export function createAdminRouter({ inbox, password, secure, isSameOrigin }) {
   const router = Router();
   const configured = Boolean(inbox && typeof password === 'string' && password.length >= 12);
   const expectedPassword = configured ? digest(password) : null;
@@ -24,8 +24,7 @@ export function createAdminRouter({ inbox, password, secure }) {
     res.set({ 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' });
     if (!configured) return res.status(503).json({ ok: false, message: 'The inbox needs a database connection and an admin password.' });
     if (['POST', 'PATCH'].includes(req.method)) {
-      const expectedOrigin = req.protocol + '://' + req.get('host');
-      if (req.get('origin') !== expectedOrigin) return res.status(403).json({ ok: false, message: 'Open the admin panel directly to continue.' });
+      if (!isSameOrigin(req)) return res.status(403).json({ ok: false, message: "Sign in from the portfolio's own /admin URL." });
       if (!req.is('application/json')) return res.status(415).json({ ok: false, message: 'Expected a JSON request.' });
     }
     next();
