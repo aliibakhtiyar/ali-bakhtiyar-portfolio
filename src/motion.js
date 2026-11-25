@@ -3,6 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Flip } from 'gsap/Flip';
 import { attachMagnet } from './shery-magnet.js';
 import { revealSheryText } from './shery.js';
+import { observePhoneReveals } from './phone-motion.js';
 
 gsap.registerPlugin(ScrollTrigger, Flip);
 
@@ -21,6 +22,9 @@ export function animateHero(root) {
     gsap.from('.intro', { y: 11, opacity: 0, duration: 0.4, stagger: 0.055, ease: 'power2.out', clearProps: 'opacity,transform' });
   }, root);
   const devices = gsap.matchMedia();
+  devices.add('(max-width: 720px)', () => {
+    gsap.from(root.querySelector('.hero-orb'), { scale: 0.94, opacity: 0.5, duration: 0.58, ease: 'power2.out', clearProps: 'opacity,transform' });
+  });
   devices.add('(hover: hover) and (pointer: fine)', () => {
     const disposers = [...root.querySelectorAll('[data-magnet]')].map((content) => attachMagnet(content.parentElement, content));
     return () => disposers.forEach((dispose) => dispose());
@@ -30,16 +34,18 @@ export function animateHero(root) {
 }
 
 export function revealSections(root) {
-  const context = gsap.context(() => {
+  const screens = gsap.matchMedia(root);
+  screens.add('(max-width: 720px)', () => observePhoneReveals(root));
+  screens.add('(width > 720px)', () => {
     root.querySelectorAll('.section-heading, .stack-step, .gallery-button').forEach((element) => {
       if (element.getBoundingClientRect().top < window.innerHeight * 0.9) return;
       gsap.from(element, { y: 16, opacity: 0, duration: 0.44, ease: 'power2.out', clearProps: 'opacity,transform',
         scrollTrigger: { trigger: element, start: 'top 91%', once: true },
       });
     });
-  }, root);
+  });
   const stopShery = revealSheryText(root, '#work-title .shery-work-title', { style: 1, delay: 0.047, y: 12, duration: 0.45, ease: 'power3.out' });
-  return () => { context.revert(); stopShery(); };
+  return () => { screens.revert(); stopShery(); };
 }
 
 export function trackLayers(root, choose) {
