@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Check, CircleDot, CodeXml, Database, Github, Layers3, Linkedin, Send, Terminal } from 'lucide-react';
+import { Check, CircleDot, CodeXml, Database, Download, Github, Layers3, Linkedin, Send, Terminal } from 'lucide-react';
 import { github, linkedin } from './data.js';
 import Stack from './Stack.jsx';
 import Work from './Work.jsx';
@@ -14,9 +14,22 @@ const workflow = [
 function About() {
   const [active, setActive] = useState(0);
   return <section id="about" tabIndex={-1} className="section shell about-grid" aria-labelledby="about-title">
-    <div className="section-heading"><p className="eyebrow">About me</p><h2 id="about-title">The interface.<br/><em>And what’s behind it.</em></h2>
-      <p>I’m Ali, a full-stack developer working with React, Node.js, Express, and MongoDB. I like building responsive interfaces and carrying a feature through to the API and data model that make it work.</p>
-      <p>I use JavaScript, C++, and Python for application development and problem solving. I’m also exploring how to put AI into everyday workflows, and I’m currently learning Next.js.</p></div>
+    <div className="section-heading">
+      <p className="eyebrow">About me</p>
+      <h2 id="about-title">Full-stack <em>developer.</em></h2>
+      <p>I develop full-stack web applications with JavaScript, React, Node.js, Express.js, and MongoDB. My work includes responsive interfaces, REST APIs, authentication, and database integration. I also use Python and FastAPI for data processing and AI integrations.</p>
+      <p>My projects include a student dashboard and events platform, a voice-enabled appointment assistant, and a review analysis application.</p>
+      <div className="cv-actions">
+        {__CV_URL__ ? (
+          <a href={__CV_URL__} download className="button secondary"><Download size={17} aria-hidden="true"/> Download CV (PDF)</a>
+        ) : (
+          <>
+            <button type="button" className="button secondary" disabled aria-describedby="cv-status"><Download size={17} aria-hidden="true"/> Download CV (PDF)</button>
+            <span id="cv-status">Coming soon</span>
+          </>
+        )}
+      </div>
+    </div>
     <div className="workflow"><h3>How I build</h3>{workflow.map(([Icon, label, details], index) => <div className="workflow-item" key={label}>
       <button type="button" aria-expanded={active === index} aria-controls={'workflow-' + index} onClick={() => setActive(active === index ? -1 : index)}><Icon size={21}/><span>{label}</span><CircleDot size={15}/></button>
       <p id={'workflow-' + index} hidden={active !== index}>{details}</p>

@@ -9,7 +9,7 @@ const pages = [['Work', 'work'], ['Stack', 'skills'], ['About', 'about'], ['Cont
 
 function Brand() {
   return <a className="brand" href="#home" aria-label="Ali Bakhtiyar home">
-    <span className="brand-mark" aria-hidden="true">AB</span><strong>Ali Bakhtiyar</strong>
+    <img className="brand-mark" src="/favicon.svg" width="36" height="36" alt=""/><strong>Ali Bakhtiyar</strong>
   </a>;
 }
 
@@ -81,7 +81,7 @@ export default function App() {
         <div className="hero-copy">
           <p className="hero-role intro">Full-stack developer</p>
           <h1 id="hero-title" className="hero-name intro">Ali Bakhtiyar</h1>
-          <p className="hero-detail intro">I build web apps and AI tools, from the interfaces people use to the APIs and data behind them.</p>
+          <p className="hero-detail intro">I build full-stack applications with React and Node.js, from student platforms to voice AI.</p>
           <div className="actions intro">
             <a className="button primary" href="#work"><span data-magnet>Explore my work</span></a>
             <a className="button secondary" href="#contact"><span data-magnet>Get in touch</span></a>

@@ -1,8 +1,10 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Github, Plus, X } from 'lucide-react';
 import { github, projects } from './data.js';
+import { useMedia } from './viewport.js';
 
 const filters = ['All', 'AI', 'Full stack', 'Frontend', 'Archive'];
+const mobileProjectLimit = 4;
 
 function Cover({ project }) {
   return <div className="gallery-cover" aria-hidden="true">
@@ -65,6 +67,8 @@ function ProjectDialog({ project, onClose }) {
 export default function Work({ motion }) {
   const [category, setCategory] = useState('All');
   const [project, setProject] = useState(null);
+  const [expanded, setExpanded] = useState(false);
+  const compact = useMedia('(max-width: 720px)');
   const grid = useRef(null);
   const animation = useRef(null);
   const snapshot = useRef(null);
@@ -77,18 +81,36 @@ export default function Work({ motion }) {
 
   function choose(next) {
     if (next === category) return;
+    captureLayout();
+    setCategory(next);
+    setExpanded(false);
+  }
+
+  function captureLayout() {
     animation.current?.progress(1);
     if (motion && effects.current) snapshot.current = effects.current.captureCards(grid.current);
-    setCategory(next);
   }
 
   useLayoutEffect(() => {
-    if (!snapshot.current) return;
-    animation.current = effects.current.moveCards(grid.current, snapshot.current);
-    snapshot.current = null;
-  }, [category]);
+    if (snapshot.current) {
+      animation.current = effects.current.moveCards(grid.current, snapshot.current);
+      snapshot.current = null;
+    }
+    if (expanded) {
+      const nextProject = grid.current.children[mobileProjectLimit]?.querySelector('button');
+      nextProject?.focus({ preventScroll: true });
+      nextProject?.scrollIntoView({ block: 'nearest' });
+    }
+  }, [category, expanded]);
 
-  const shown = projects.filter((item) => category === 'All' || item.category === category);
+  const filtered = projects.filter((item) => category === 'All' || item.category === category);
+  const canExpand = compact && category === 'All' && filtered.length > mobileProjectLimit;
+  const shown = canExpand && !expanded ? filtered.slice(0, mobileProjectLimit) : filtered;
+
+  function toggleProjects() {
+    captureLayout();
+    setExpanded((value) => !value);
+  }
 
   return <section id="work" className="shell section work" aria-labelledby="work-title" tabIndex={-1}>
     <div className="section-heading split-heading"><div><p className="eyebrow">Portfolio</p><h2 id="work-title">Selected work.</h2></div>
@@ -97,9 +119,13 @@ export default function Work({ motion }) {
     <div className="filter-row" role="group" aria-label="Filter projects">
       {filters.map((filter) => <button type="button" key={filter} aria-pressed={category === filter} onClick={() => choose(filter)}>{filter}</button>)}
     </div>
-    <div className="project-grid" ref={grid} data-featured={category === 'All'}>
+    <div id="portfolio-projects" className="project-grid" ref={grid} data-featured={category === 'All'}>
       {shown.map((item, index) => <ProjectCard key={item.repo} project={item} motion={motion} feature={category === 'All' && index === 0} onOpen={setProject}/>)}
     </div>
+    {canExpand && <button type="button" className="button secondary project-more" aria-expanded={expanded}
+      aria-controls="portfolio-projects" onClick={toggleProjects}>
+      {expanded ? 'Show fewer projects' : 'Show ' + (filtered.length - shown.length) + ' more projects'}
+    </button>}
     <ProjectDialog project={project} onClose={() => setProject(null)}/>
   </section>;
 }

@@ -15,6 +15,10 @@ npm.cmd start
 
 Open http://localhost:8787. For development use `npm.cmd run dev` in a second terminal. Vite proxies contact submissions to the Express server on port 8787. For working mail on the local server, copy `.env.example` to `.env` and configure a real SMTP sender and recipient.
 
+## Add your CV
+
+Save your finished PDF as `public/ali-bakhtiyar-cv.pdf`. Rebuild with `npm.cmd run build` and restart the server to enable the download in About. Restart Vite if you are using the development server.
+
 ## Hosted contact
 
 Sites provisions the `DB` binding and runs the migration in `drizzle/`. Every successful submission inserts a row in `contact_messages`. The Site owner can retrieve rows through the site's database tools. The hosted form does not send email notifications. The contact API rejects cross-origin requests, limits request size, validates fields, and rate limits writes. The database stores the sender fields and a time-bucketed hash for rate limiting.

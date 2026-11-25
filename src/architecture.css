@@ -15,15 +15,6 @@
 :root:has([data-motion="false"]) { scroll-behavior: auto; }
 .site-header { background: #080d14f5; border-color: #223041; }
 .brand strong { font-weight: 750; }
-.brand-mark {
-  width: 37px;
-  height: 37px;
-  border-color: #355461;
-  background: #142731;
-  color: #b4efea;
-  font-size: .87rem;
-  letter-spacing: -.04em;
-}
 .hero {
   position: relative;
   isolation: isolate;
