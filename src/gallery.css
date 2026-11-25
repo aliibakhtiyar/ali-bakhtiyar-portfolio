@@ -130,6 +130,7 @@
 }
 .gallery-caption p { color: var(--muted); font-size: .78rem; letter-spacing: .035em; margin-bottom: 5px; }
 .gallery-caption h3 { font-size: clamp(1.08rem, 2.1vw, 1.65rem); color: white; font-weight: 740; letter-spacing: -.035em; line-height: 1.15; }
+.gallery-tagline { display: block; margin-top: 6px; color: var(--muted); font-size: .84rem; line-height: 1.4; }
 .gallery-link { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 44px; padding-inline: 10px; border: 1px solid #475341; border-radius: 7px; color: #e1eead; font-size: .84rem; font-weight: 650; white-space: nowrap; }
 .gallery-link:hover { background: #263023; border-color: #9bac7b; }
 .gallery-open { position: absolute; right: 10px; bottom: 10px; display: grid; place-items: center; width: 36px; height: 36px; color: #fff; background: #141815ed; border: 1px solid #fff7; border-radius: 50%; transition: transform .25s, background .25s, color .25s; }
@@ -137,6 +138,10 @@
 :root:has(dialog[open]) { overflow: hidden; }
 .project-dialog { background: #141916; border-color: #475047; }
 .project-dialog .dialog-copy .eyebrow { color: #dcebaf; }
+.project-tagline { margin-bottom: 8px; color: #dcebaf; font-weight: 650; }
+.project-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 22px; }
+.project-actions .button { margin-top: 0; }
+.project-dialog li + li { margin-top: 6px; }
 .stack-section { border-top: 0; }
 .stack-visual-panel { border-color: #3c4940; }
 .stack-visual-panel .architecture-heading, .stack-tabs { background: #17201c; border-color: #344137; }

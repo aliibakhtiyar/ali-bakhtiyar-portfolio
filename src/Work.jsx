@@ -8,7 +8,7 @@ const mobileProjectLimit = 4;
 
 function Cover({ project }) {
   return <div className="gallery-cover" aria-hidden="true">
-    <img src={'/gallery/' + project.id + '.jpg'} alt="" width={project.liveUrl ? 960 : 768} height={project.liveUrl ? 448 : 512} loading="lazy" decoding="async"/>
+    <img src={'/gallery/' + project.id + '.jpg'} alt="" width={project.screenshot ? 960 : 768} height={project.screenshot ? 448 : 512} loading="lazy" decoding="async"/>
   </div>;
 }
 
@@ -19,7 +19,11 @@ function ProjectCard({ project, onOpen }) {
       <span className="gallery-open" aria-hidden="true"><Plus size={19}/></span>
     </button>
     <div className="gallery-caption">
-      <div><p>{project.liveUrl ? 'Live website' : project.category}</p><h3>{project.name}</h3></div>
+      <div>
+        <p>{project.liveUrl ? 'Live website' : project.category}</p>
+        <h3>{project.name}</h3>
+        {project.tagline && <span className="gallery-tagline">{project.tagline}</span>}
+      </div>
       <a className="gallery-link" href={project.liveUrl || project.url} target="_blank" rel="noreferrer"
         aria-label={'Open ' + project.name + (project.liveUrl ? ' website' : ' on GitHub')}>
         {project.liveUrl ? 'Visit site' : 'Source'}<ArrowUpRight size={16} aria-hidden="true"/>
@@ -43,15 +47,17 @@ function ProjectDialog({ project, onClose }) {
       <button type="button" autoFocus className="icon-button dialog-close" onClick={onClose} aria-label="Close project"><X size={20}/></button>
       <Cover project={project}/>
       <div className="dialog-copy">
-        <p className="eyebrow">{project.liveUrl ? 'Website screenshot' : project.category + ' / UI concept'}</p>
+        <p className="eyebrow">{project.screenshot ? 'Website screenshot' : project.category + ' / UI concept'}</p>
         <h2 id="project-title">{project.name}</h2>
+        {project.tagline && <p className="project-tagline">{project.tagline}</p>}
         <p>{project.description}</p>
-        <h3>{project.liveUrl ? 'Website highlights' : 'Repository highlights'}</h3>
+        <div className="project-actions">
+          {project.liveUrl && <a className="button primary" href={project.liveUrl} target="_blank" rel="noreferrer">Visit live website <ArrowUpRight size={17}/></a>}
+          {project.url && <a className={'button ' + (project.liveUrl ? 'secondary' : 'primary')} href={project.url} target="_blank" rel="noreferrer"><Github size={17}/> View source on GitHub</a>}
+        </div>
+        <h3>{project.featuresTitle || (project.liveUrl ? 'Website highlights' : 'Repository highlights')}</h3>
         <ul>{project.features.map((feature) => <li key={feature}>{feature}</li>)}</ul>
         {project.stack?.length > 0 && <div className="tags">{project.stack.map((item) => <span key={item}>{item}</span>)}</div>}
-        {project.liveUrl
-          ? <a className="button primary" href={project.liveUrl} target="_blank" rel="noreferrer">Visit live website <ArrowUpRight size={17}/></a>
-          : <a className="button primary" href={project.url} target="_blank" rel="noreferrer"><Github size={17}/> View source on GitHub</a>}
       </div>
     </div>}
   </dialog>;
@@ -96,7 +102,7 @@ export default function Work({ motion }) {
     }
   }, [category, expanded]);
 
-  const filtered = projects.filter((item) => category === 'All' || item.category === category);
+  const filtered = projects.filter((item) => category === 'All' || (category === 'Live sites' ? Boolean(item.liveUrl) : item.category === category));
   const canExpand = compact && category === 'All' && filtered.length > mobileProjectLimit;
   const shown = canExpand && !expanded ? filtered.slice(0, mobileProjectLimit) : filtered;
 
