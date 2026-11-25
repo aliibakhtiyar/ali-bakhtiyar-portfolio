@@ -80,7 +80,7 @@ export default function App() {
         <HeroOrb motion={motion}/>
         <div className="hero-copy">
           <p className="hero-role intro">Full-stack developer</p>
-          <h1 id="hero-title" className="hero-name intro">Ali Bakhtiyar</h1>
+          <h1 id="hero-title" className="hero-name intro" aria-label="Ali Bakhtiyar"><span className="shery-name" aria-hidden="true">Ali Bakhtiyar</span></h1>
           <p className="hero-detail intro">I build full-stack applications with React and Node.js, from student platforms to voice AI.</p>
           <div className="actions intro">
             <a className="button primary" href="#work"><span data-magnet>Explore my work</span></a>

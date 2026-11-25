@@ -55,7 +55,7 @@ function Contact() {
         setState({ status: 'error', message: result.message ?? 'The message could not be submitted. Please try again.' });
         return;
       }
-      setState({ status: 'success', message: 'Your message was received.' });
+      setState({ status: 'success', message: 'Thanks for reaching out. Your message was received.' });
       form.reset();
     } catch {
       setState({ status: 'error', message: 'The contact service is unavailable. Try again or connect on GitHub.' });

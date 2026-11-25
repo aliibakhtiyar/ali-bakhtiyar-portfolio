@@ -1,0 +1,34 @@
+:root { color: #eef1e9; background: #0e110e; font-family: Manrope, "Segoe UI", sans-serif; }
+@font-face { font-family: Manrope; src: url('/fonts/manrope.ttf') format('truetype'); font-weight: 200 800; font-display: swap; }
+.admin-page { width: min(100% - 32px, 1100px); margin: auto; padding: 28px 0 65px; }
+.admin-back, .admin-toolbar button, .admin-message-head .text-link { display: inline-flex; align-items: center; gap: 8px; }
+.admin-back { color: #cfdea9; margin-bottom: 30px; min-height: 43px; }
+.admin-login, .admin-reading, .admin-message-list { background: #171c17; border: 1px solid #343e33; border-radius: 12px; }
+.admin-login { display: grid; width: min(100%, 440px); gap: 12px; margin: 20px auto 0; padding: clamp(18px, 6vw, 34px); }
+.admin-icon { display: grid; place-items: center; height: 47px; width: 47px; border-radius: 9px; background: #29331e; color: #ddebaf; }
+.admin-login h1, .admin-heading h1 { font-size: clamp(1.9rem, 5vw, 3.05rem); line-height: 1.13; font-weight: 760; letter-spacing: -.05em; }
+.admin-login p, .admin-empty, .admin-message-head p { color: #c1cbbf; }
+.admin-login label { margin-top: 9px; font-weight: 670; }
+.admin-login input { padding: 10px 13px; min-height: 45px; border: 1px solid #495849; border-radius: 6px; background: #0e1410; }
+.admin-heading { display: flex; gap: 14px; justify-content: space-between; align-items: end; flex-wrap: wrap; margin-bottom: 18px; }
+.admin-toolbar { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 14px; }
+.admin-toolbar > div { display: flex; gap: 6px; padding: 4px; background: #1c231b; border-radius: 8px; }
+.admin-toolbar > div button { padding: 8px 12px; min-height: 39px; border-radius: 6px; }
+.admin-toolbar > div button[aria-pressed="true"] { background: #ddebaf; color: #121b0c; }
+.admin-inbox { display: grid; grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr); gap: 12px; align-items: start; }
+.admin-message-list > p { padding: 18px; }
+.admin-message-list li + li { border-top: 1px solid #344033; }
+.admin-message-list li button { width: 100%; display: grid; gap: 5px; color: inherit; padding: 13px 15px; text-align: left; overflow-wrap: anywhere; border-radius: 8px; }
+.admin-message-list li button:hover, .admin-message-list li button[aria-pressed="true"] { background: #273322; }
+.admin-message-from { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: .88rem; color: #c6d2c4; }
+.admin-message-from small { color: #ddeaaf; font-weight: 700; }
+.admin-message-list time { color: #aebcaa; font-size: .84rem; }
+.admin-reading { padding: clamp(17px, 4vw, 31px); min-height: 150px; overflow-wrap: anywhere; }
+.admin-message-head { display: flex; justify-content: space-between; flex-wrap: wrap; align-items: start; gap: 10px; }
+.admin-message-head h2 { font-size: clamp(1.35rem, 3vw, 2rem); font-weight: 740; }
+.admin-message-head p { margin: 5px 0; }
+.admin-message-body { white-space: pre-wrap; padding: 18px 0 22px; line-height: 1.6; }
+.admin-empty { display: flex; align-items: center; gap: 10px; padding: 20px; }
+.admin-more { margin: 10px 14px 14px; }
+.admin-page .admin-error { color: #ffb9ac; margin-block: 6px; }
+@media (max-width: 760px) { .admin-inbox { grid-template-columns: 1fr; } }

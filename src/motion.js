@@ -2,6 +2,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Flip } from 'gsap/Flip';
 import { attachMagnet } from './shery-magnet.js';
+import { revealSheryText } from './shery.js';
 
 gsap.registerPlugin(ScrollTrigger, Flip);
 
@@ -24,7 +25,8 @@ export function animateHero(root) {
     const disposers = [...root.querySelectorAll('[data-magnet]')].map((content) => attachMagnet(content.parentElement, content));
     return () => disposers.forEach((dispose) => dispose());
   });
-  return () => { context.revert(); devices.revert(); };
+  const stopShery = revealSheryText(root, '#hero-title .shery-name', { style: 2, multiplier: 0.046, ease: 'power3.out' });
+  return () => { context.revert(); devices.revert(); stopShery(); };
 }
 
 export function revealSections(root) {
@@ -36,7 +38,8 @@ export function revealSections(root) {
       });
     });
   }, root);
-  return () => context.revert();
+  const stopShery = revealSheryText(root, '#work-title .shery-work-title', { style: 1, delay: 0.047, y: 12, duration: 0.45, ease: 'power3.out' });
+  return () => { context.revert(); stopShery(); };
 }
 
 export function trackLayers(root, choose) {

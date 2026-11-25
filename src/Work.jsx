@@ -113,7 +113,7 @@ export default function Work({ motion }) {
   }
 
   return <section id="work" className="shell section work" aria-labelledby="work-title" tabIndex={-1}>
-    <div className="section-heading split-heading"><div><p className="eyebrow">Portfolio</p><h2 id="work-title">Selected work.</h2></div>
+    <div className="section-heading split-heading"><div><p className="eyebrow">Portfolio</p><h2 id="work-title" aria-label="Selected work"><span className="shery-work-title" aria-hidden="true">Selected work.</span></h2></div>
       <a className="text-link work-github" href={github + '?tab=repositories'} target="_blank" rel="noreferrer"><Github size={19}/> All GitHub projects</a>
     </div>
     <div className="filter-row" role="group" aria-label="Filter projects">

@@ -1,6 +1,10 @@
 # Third-party notices
 
-## Shery.js magnetic hover
+## Shery.js
+
+The portfolio includes the original minified UMD distribution from the [Shery.js project](https://github.com/sheryianscodingschool/sheryjs/blob/main/dist/Shery.js). See the [upstream distribution notices](public/vendor/Shery.js.LICENSE.txt). Its text animation API uses the portfolio's GSAP and Three.js modules.
+
+### Magnetic hover adaptation
 
 `src/shery-magnet.js` adapts the `makeMagnet` effect from [Shery.js](https://github.com/sheryianscodingschool/sheryjs/blob/main/src/Effects.js), by Aayush Chouhan and Asynchronous Javascriptor. It uses the project's existing GSAP installation and adds scoped event cleanup.
 

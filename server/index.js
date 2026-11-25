@@ -1,6 +1,37 @@
-import express from 'express';import helmet from 'helmet';import rateLimit from 'express-rate-limit';import nodemailer from 'nodemailer';import path from 'node:path';import {fileURLToPath} from 'node:url';import {existsSync} from 'node:fs';import {validateContact} from './validate.js';
-if(existsSync('.env'))process.loadEnvFile('.env');const app=express();const dist=fileURLToPath(new URL('../dist/client/',import.meta.url));app.disable('x-powered-by');app.use(helmet({contentSecurityPolicy:{directives:{defaultSrc:["'self'"],scriptSrc:["'self'"],styleSrc:["'self'","'unsafe-inline'"],imgSrc:["'self'","data:"],connectSrc:["'self'"],objectSrc:["'none'"]}}}));app.use(express.json({limit:'12kb'}));app.get('/api/health',(_,res)=>res.json({ok:true,contactConfigured:!!(process.env.SMTP_URL&&process.env.SMTP_FROM&&process.env.CONTACT_TO)}));app.post('/api/contact',rateLimit({windowMs:15*60*1000,limit:5,standardHeaders:'draft-7',legacyHeaders:false,message:{ok:false,message:'Too many attempts. Please try later.'}}),async(req,res)=>{const result=validateContact(req.body);if(!result.ok)return res.status(400).json(result);const {SMTP_URL,SMTP_FROM,CONTACT_TO}=process.env;if(!SMTP_URL||!SMTP_FROM||!CONTACT_TO)return res.status(503).json({ok:false,message:'Contact email is not configured yet. Please connect on GitHub.'});const {name,email,subject,message}=result.data;try{const transport=nodemailer.createTransport(SMTP_URL);const info=await transport.sendMail({from:SMTP_FROM,to:CONTACT_TO,replyTo:email,subject:`Portfolio: ${subject}`,text:`From: ${name} <${email}>\n\n${message}`});if(!info.accepted?.length)throw Error('No recipient accepted');res.json({ok:true})}catch{res.status(502).json({ok:false,message:'Email service could not accept the message. Please try again.'})}});app.get('/sitemap.xml',(_,res)=>{const site=process.env.SITE_URL;try{const url=new URL(site);if(!['https:','http:'].includes(url.protocol))throw Error();const safe=url.href.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');res.type('application/xml').send(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${safe}</loc></url></urlset>`)}catch{res.status(503).send('Set SITE_URL to the deployed URL.')}});app.use(express.static(dist,{setHeaders:(res,file)=>{if(file.includes(`${path.sep}assets${path.sep}`))res.setHeader('Cache-Control','public,max-age=31536000,immutable')}}));app.use((err,req,res,next)=>{if(err)return res.status(err.status===413?413:400).json({ok:false,message:'Invalid request.'});next()});const port = Number(process.env.PORT) || 8787;
-app.listen(port, (error) => {
-  if (error) { console.error(error.message); process.exitCode = 1; return; }
+import { existsSync } from 'node:fs';
+import { createApp } from './app.js';
+import { openInbox } from './inbox.js';
+
+if (existsSync('.env')) process.loadEnvFile('.env');
+
+const { ADMIN_PASSWORD, MONGODB_URI, MONGODB_DB, PORT, RENDER } = process.env;
+if (ADMIN_PASSWORD && (ADMIN_PASSWORD.length < 12 || ADMIN_PASSWORD.length > 512)) {
+  console.error('Set ADMIN_PASSWORD to a password between 12 and 512 characters.');
+  process.exit(1);
+}
+
+let inbox;
+try {
+  if (MONGODB_URI) inbox = await openInbox(MONGODB_URI, MONGODB_DB || 'portfolio');
+} catch {
+  console.error('MongoDB could not initialize. Check the Atlas URI, database user and Network Access configuration.');
+  process.exit(1);
+}
+
+const port = Number(PORT) || 8787;
+const app = createApp({ inbox });
+const server = app.listen(port, RENDER === 'true' ? '0.0.0.0' : '127.0.0.1', (error) => {
+  if (error) {
+    console.error('The portfolio could not listen on port ' + port + '.');
+    process.exitCode = 1;
+    inbox?.close().catch(() => {});
+    return;
+  }
   console.log('Portfolio running at http://localhost:' + port);
 });
+
+function shutdown() {
+  server.close(() => inbox?.close().catch(() => {}));
+}
+process.once('SIGINT', shutdown);
+process.once('SIGTERM', shutdown);

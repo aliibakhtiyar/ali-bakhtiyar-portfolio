@@ -73,6 +73,7 @@
 .hero-copy { position: relative; width: min(100%, 700px); }
 .hero-role { color: #e1efaf; margin-bottom: 15px; }
 .hero-role::before { background: #d2e98c; width: 18px; }
+.sheryelem > span { display: inline-block; }
 .hero-name { font-weight: 730; font-size: clamp(3.2rem, 8.2vw, 8rem); letter-spacing: -.087em; line-height: .96; }
 .hero-detail { color: #d1d8d1; margin: 22px 0 25px; max-width: 37ch; font-size: clamp(1.03rem, 1.65vw, 1.32rem); line-height: 1.55; }
 .button { border-radius: 7px; }
@@ -160,7 +161,7 @@
 @media (max-width: 850px) {
   .project-grid { grid-template-columns: repeat(2,minmax(0,1fr)); grid-auto-rows: auto; }
   .gallery-feature .gallery-button { min-height: clamp(255px, 49vw, 380px); }
-  .hero-name { font-size: clamp(3.25rem, 9.4vw, 6.1rem); }
+.hero-name { font-size: clamp(3.25rem, 9.4vw, 6.1rem); }
 }
 @media (max-width: 720px) {
   .nav { height: 61px; }
@@ -207,7 +208,7 @@
   .gallery-button, .gallery-feature .gallery-button { min-height: clamp(205px, 61vw, 290px); }
 }
 @media (max-width: 360px) {
-  .hero-name { font-size: clamp(2.2rem, 10vw, 3.24rem); }
+.hero-name { font-size: clamp(2.2rem, 10vw, 3.24rem); }
   .hero { padding-inline: 13px; }
   .hero .actions .button { padding-inline: 11px; }
 }
