@@ -1,39 +1,30 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Github, Plus, X } from 'lucide-react';
+import { ArrowUpRight, Github, Plus, X } from 'lucide-react';
 import { github, projects } from './data.js';
 import { useMedia } from './viewport.js';
 
-const filters = ['All', 'AI', 'Full stack', 'Frontend', 'Archive'];
+const filters = ['All', 'Live sites', 'AI', 'Full stack', 'Frontend', 'Archive'];
 const mobileProjectLimit = 4;
 
 function Cover({ project }) {
   return <div className="gallery-cover" aria-hidden="true">
-    <img src={'/gallery/' + project.repo.toLowerCase() + '.jpg'} alt="" width={project.repo === "medicall-ai" ? 900 : 380} height={project.repo === "medicall-ai" ? 600 : 508} loading="lazy" decoding="async"/>
+    <img src={'/gallery/' + project.id + '.jpg'} alt="" width={project.liveUrl ? 960 : 768} height={project.liveUrl ? 448 : 512} loading="lazy" decoding="async"/>
   </div>;
 }
 
-function ProjectCard({ project, feature, motion, onOpen }) {
-  function move(event) {
-    if (!motion || event.pointerType !== 'mouse') return;
-    const { currentTarget: target, clientX, clientY } = event;
-    const rect = target.getBoundingClientRect();
-    target.style.setProperty('--pan-x', ((clientX - rect.left) / rect.width - 0.5) * -19 + 'px');
-    target.style.setProperty('--pan-y', ((clientY - rect.top) / rect.height - 0.5) * -15 + 'px');
-  }
-
-  function reset(event) {
-    event.currentTarget.style.removeProperty('--pan-x');
-    event.currentTarget.style.removeProperty('--pan-y');
-  }
-
-  return <article className={'project-card gallery-card' + (feature ? ' gallery-feature' : '')}>
-    <button type="button" className="gallery-button" onPointerMove={move} onPointerLeave={reset} onClick={() => onOpen(project)} aria-label={'View ' + project.name + ' details'}>
+function ProjectCard({ project, onOpen }) {
+  return <article className="project-card gallery-card">
+    <button type="button" className="gallery-button" onClick={() => onOpen(project)} aria-label={'View ' + project.name + ' details'}>
       <Cover project={project}/>
-      <div className="gallery-caption">
-        <div><p>{project.category}</p><h3>{project.name}</h3></div>
-        <span className="gallery-open"><Plus size={20}/></span>
-      </div>
+      <span className="gallery-open" aria-hidden="true"><Plus size={19}/></span>
     </button>
+    <div className="gallery-caption">
+      <div><p>{project.liveUrl ? 'Live website' : project.category}</p><h3>{project.name}</h3></div>
+      <a className="gallery-link" href={project.liveUrl || project.url} target="_blank" rel="noreferrer"
+        aria-label={'Open ' + project.name + (project.liveUrl ? ' website' : ' on GitHub')}>
+        {project.liveUrl ? 'Visit site' : 'Source'}<ArrowUpRight size={16} aria-hidden="true"/>
+      </a>
+    </div>
   </article>;
 }
 
@@ -52,13 +43,15 @@ function ProjectDialog({ project, onClose }) {
       <button type="button" autoFocus className="icon-button dialog-close" onClick={onClose} aria-label="Close project"><X size={20}/></button>
       <Cover project={project}/>
       <div className="dialog-copy">
-        <p className="eyebrow">{project.category} · Illustrated cover</p>
+        <p className="eyebrow">{project.liveUrl ? 'Website screenshot' : project.category + ' / UI concept'}</p>
         <h2 id="project-title">{project.name}</h2>
         <p>{project.description}</p>
-        <h3>Repository highlights</h3>
+        <h3>{project.liveUrl ? 'Website highlights' : 'Repository highlights'}</h3>
         <ul>{project.features.map((feature) => <li key={feature}>{feature}</li>)}</ul>
-        <div className="tags">{project.stack.map((item) => <span key={item}>{item}</span>)}</div>
-        <a className="button primary" href={project.url} target="_blank" rel="noreferrer"><Github size={17}/> View source on GitHub</a>
+        {project.stack?.length > 0 && <div className="tags">{project.stack.map((item) => <span key={item}>{item}</span>)}</div>}
+        {project.liveUrl
+          ? <a className="button primary" href={project.liveUrl} target="_blank" rel="noreferrer">Visit live website <ArrowUpRight size={17}/></a>
+          : <a className="button primary" href={project.url} target="_blank" rel="noreferrer"><Github size={17}/> View source on GitHub</a>}
       </div>
     </div>}
   </dialog>;
@@ -119,8 +112,8 @@ export default function Work({ motion }) {
     <div className="filter-row" role="group" aria-label="Filter projects">
       {filters.map((filter) => <button type="button" key={filter} aria-pressed={category === filter} onClick={() => choose(filter)}>{filter}</button>)}
     </div>
-    <div id="portfolio-projects" className="project-grid" ref={grid} data-featured={category === 'All'}>
-      {shown.map((item, index) => <ProjectCard key={item.repo} project={item} motion={motion} feature={category === 'All' && index === 0} onOpen={setProject}/>)}
+    <div id="portfolio-projects" className="project-grid" ref={grid}>
+      {shown.map((item) => <ProjectCard key={item.id} project={item} onOpen={setProject}/>)}
     </div>
     {canExpand && <button type="button" className="button secondary project-more" aria-expanded={expanded}
       aria-controls="portfolio-projects" onClick={toggleProjects}>

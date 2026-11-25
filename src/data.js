@@ -1,7 +1,38 @@
 const base='https://github.com/aliibakhtiyar/';
 export const github='https://github.com/aliibakhtiyar';
 export const linkedin='https://in.linkedin.com/in/ali-bakhtiyar-b224b229a';
-export const projects=[
+const liveSites=[
+  {
+    id:'taskassist',
+    name:'TaskAssist',
+    liveUrl:'https://taskassist.netlify.app/',
+    description:'A personal productivity dashboard for organizing tasks and tracking study progress.',
+    features:['Study streaks, goals and progress charts','Calendar, notes and revision tracker','Local autosave']
+  },
+  {
+    id:'first-coffee',
+    name:'1st Coffee',
+    liveUrl:'https://firstcoffeeee.netlify.app/',
+    description:'A website for a specialty coffee shop in Vasant Vihar, New Delhi.',
+    features:['Coffee and seasonal drink menu','Online ordering and visit information']
+  },
+  {
+    id:'eden-cafe',
+    name:'The Eden Cafe Rooftop',
+    liveUrl:'https://thee1.netlify.app/',
+    description:'A rooftop café website for visitors in Jamia Nagar, New Delhi.',
+    features:['Menu and gallery','Table reservations and home delivery links']
+  },
+  {
+    id:'beyond-the-code',
+    name:'Beyond the Code',
+    liveUrl:'https://roadmapmern.netlify.app/',
+    description:'A 60-day learning roadmap covering MERN fundamentals, generative AI projects and production engineering.',
+    features:['Guided 60-day learning path','Web development and generative AI projects','Security, performance and reliability topics']
+  }
+].map(project=>({...project,category:'Live sites'}));
+
+const repositories=[
  {name:'MediCall AI',repo:'medicall-ai',category:'AI',number:'01',theme:'medical',symbol:'✳',description:'A conversational AI application for doctor and appointment queries, with a React client, Express server and voice conversation mode.',stack:['React','Tailwind CSS','Express','MongoDB','Vapi','Groq'],features:['React client and Node.js API','Doctor and appointment chat interface','Live voice conversation and transcription flow','Patient token and authentication logic'],source:'README, client/server package manifests and client App.jsx'},
  {name:'Student Platform',repo:'student-project-main',category:'Full stack',number:'02',theme:'student',symbol:'◈',description:'A MERN student platform documented around academic resources, career opportunities and campus community features.',stack:['React','Node.js','MongoDB','Tailwind CSS','Socket.IO'],features:['Student authentication and dashboard','Hackathons, events and internships','AI student assistant, leaderboards, PvP and study rooms'],source:'Repository README, frontend package manifest and App.jsx'},
  {name:'ReviewGuard Intelligence',repo:'ai_debate',category:'AI',number:'03',theme:'review',symbol:'◎',description:'A multi-workspace review operations and investigation application, documented with deterministic analysis and AI workflows.',stack:['React','Express','MongoDB','FastAPI','LangGraph','Redis'],features:['CSV, XLSX and JSON review imports','Deterministic review analysis and investigation cases','AI-assisted investigations with citation checks'],source:'Repository README (repository name: ai_debate)'},
@@ -10,5 +41,7 @@ export const projects=[
  {name:'Al-Zaika',repo:'al-zaika',category:'Frontend',number:'06',theme:'food',symbol:'◒',description:'A restaurant-themed web front end with a restaurant search interface and food-tracking navigation.',stack:['HTML','CSS','JavaScript'],features:['Static web application','Restaurant search interface','Food-tracking navigation in the page markup'],source:'Repository root directory'},
  {name:'BOOKHUB',repo:'BOOKHUB',category:'Full stack',number:'07',theme:'book',symbol:'▱',description:'A project organized into frontend and backend folders, with a React frontend and form/API integration dependencies.',stack:['React','Tailwind CSS','Axios','React Hook Form'],features:['Separate frontend and backend','React frontend','Form and HTTP client dependencies'],source:'Repository root and frontend package manifest'},
  {name:'Zomato Insta',repo:'Zomato-insta',category:'Archive',number:'08',theme:'food',symbol:'◉',description:'A public repository containing a Zomato clone ZIP archive. Internal functionality has not been verified.',stack:[],features:['Public project archive'],source:'Repository root directory'}
-].map(p=>({...p,url:base+p.repo}));
+].map(project=>({...project,id:project.repo.toLowerCase(),url:base+project.repo}));
+
+export const projects=[...liveSites,...repositories];
 export const skills=[['HTML','Frontend','Semantic page structure'],['CSS','Frontend','Responsive styling and layouts'],['JavaScript','Frontend','Interactive web applications'],['React','Frontend','Component-based UI'],['Tailwind CSS','Frontend','Utility-first styling'],['GSAP','Creative','Timeline-based web animation'],['Node.js','Backend','JavaScript server runtime'],['Express','Backend','REST API development'],['MongoDB','Backend','Document database'],['C++','Programming','Programming and problem solving'],['Python','Programming','Scripting and AI applications'],['Git','Tools','Version control'],['GitHub','Tools','Repository collaboration'],['Next.js','Learning','Currently exploring routing and rendering in Next.js']];
