@@ -17,10 +17,20 @@ export function moveCards(element, state) {
   });
 }
 
-export function animateHero(root) {
+export function animateHero(root, orbProgress) {
   const context = gsap.context(() => {
     gsap.from('.intro', { y: 14, opacity: 0, duration: 0.55, stagger: 0.07, ease: 'power2.out', clearProps: 'opacity,transform' });
-    gsap.from('.hero-detail', { clipPath: 'inset(0 0 100% 0)', delay: 0.14, duration: 0.62, ease: 'power3.out', clearProps: 'clipPath' });
+    gsap.from('.hero-word', {
+      y: 8, opacity: 0.08, delay: 0.23, duration: 0.48, stagger: 0.028,
+      ease: 'power3.out', clearProps: 'opacity,transform',
+    });
+    const scrollMotion = { position: 0 };
+    gsap.to(scrollMotion, {
+      position: 1,
+      onUpdate: () => { orbProgress.current = scrollMotion.position; },
+      ease: 'none',
+      scrollTrigger: { trigger: '#home', start: 'top top', end: 'bottom top', scrub: 0.35 },
+    });
   }, root);
   const devices = gsap.matchMedia();
   devices.add('(max-width: 720px)', () => {
@@ -31,10 +41,12 @@ export function animateHero(root) {
     return () => disposers.forEach((dispose) => dispose());
   });
   const stopShery = revealSheryText(root, '#hero-title .shery-name', { style: 2, multiplier: 0.046, ease: 'power3.out' });
-  const stopAssemblyText = revealSheryText(root, '#assembly-title .shery-assembly-title', {
-    style: 1, delay: 0.024, y: 15, duration: 0.55, ease: 'power3.out',
-  });
-  return () => { context.revert(); devices.revert(); stopShery(); stopAssemblyText(); };
+  return () => {
+    context.revert();
+    devices.revert();
+    stopShery();
+    orbProgress.current = 0;
+  };
 }
 
 export function revealSections(root) {
@@ -69,18 +81,5 @@ export function trackLayers(root, choose) {
   const trigger = ScrollTrigger.create({
     trigger: root, start: 'top bottom', end: 'bottom top', onUpdate: sync, onRefresh: sync,
   });
-  return () => trigger.kill();
-}
-
-export function trackAssembly(section, update) {
-  const sync = (trigger) => update(trigger.progress);
-  const trigger = ScrollTrigger.create({
-    trigger: section,
-    start: 'top 78%',
-    end: 'bottom 82%',
-    onUpdate: sync,
-    onRefresh: sync,
-  });
-  sync(trigger);
   return () => trigger.kill();
 }

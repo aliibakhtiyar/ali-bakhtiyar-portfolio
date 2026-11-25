@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client';
 import './style.css';
 import './architecture.css';
 import './gallery.css';
-import './home-assembly.css';
 
 const Page = /^\/admin\/?$/.test(window.location.pathname)
   ? lazy(() => import('./Admin.jsx'))

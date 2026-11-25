@@ -7,6 +7,8 @@
 }
 .site-header { background: #0c0e0df5; border-color: #262a27; }
 .nav { height: 68px; }
+.brand-mark { border-radius: 9px; }
+.brand:hover .brand-mark { box-shadow: 0 0 16px #c6ef7639; }
 .nav-links { color: #c5cac7; }
 .nav-github { border-color: #373f37; }
 .nav-github:hover { background: #202620; }
@@ -70,6 +72,7 @@
 }
 .hero-orb[data-ready="true"] .orb-fallback { opacity: 0; }
 
+.hero-word { display: inline-block; }
 .hero-copy { position: relative; width: min(100%, 700px); }
 .hero-role { color: #e1efaf; margin-bottom: 15px; }
 .hero-role::before { background: #d2e98c; width: 18px; }

@@ -5,6 +5,7 @@ import { MathUtils } from 'three';
 const vertexShader = `
   uniform float uTime;
   uniform float uScale;
+  uniform float uScroll;
   varying float vFace;
   varying float vBand;
   varying float vVariation;
@@ -13,7 +14,9 @@ const vertexShader = `
     vec3 direction = normalize(position);
     float wave = sin(position.y * 5.4 + position.x * 3.5 + uTime * 0.78);
     float crosswave = sin(position.z * 5.6 - position.y * 2.2 - uTime * 0.62);
-    vec3 surface = position + direction * (wave * 0.12 + crosswave * 0.077);
+    float scrollPulse = sin(uScroll * 3.14159);
+    float ripple = sin(position.y * 7.5 - uScroll * 8.0) * scrollPulse * 0.14;
+    vec3 surface = position + direction * (wave * 0.12 + crosswave * 0.077 + ripple);
     vec4 projected = modelViewMatrix * vec4(surface, 1.0);
     vFace = smoothstep(-0.44, 0.98, (normalMatrix * direction).z);
     vBand = wave * 0.5 + 0.5;
@@ -41,7 +44,7 @@ const fragmentShader = `
   }
 `;
 
-function ParticleSphere({ compact, rotation, onReady }) {
+function ParticleSphere({ compact, rotation, scrollProgress, onReady }) {
   const points = useRef(null);
   const time = useRef(0);
   const positions = useMemo(() => {
@@ -56,17 +59,19 @@ function ParticleSphere({ compact, rotation, onReady }) {
     }
     return coordinates;
   }, [compact]);
-  const uniforms = useMemo(() => ({ uTime: { value: 0 }, uScale: { value: 1 } }), []);
+  const uniforms = useMemo(() => ({ uTime: { value: 0 }, uScale: { value: 1 }, uScroll: { value: 0 } }), []);
 
   useFrame(({ gl }, delta) => {
     const initial = time.current === 0;
     const dt = Math.min(delta, 0.05);
     time.current += dt || 0.001;
     const { x, y, hoverX, hoverY } = rotation.current;
+    const scroll = scrollProgress.current;
     points.current.rotation.x = MathUtils.damp(points.current.rotation.x, x + hoverY * 0.38, 6, dt);
-    points.current.rotation.y = MathUtils.damp(points.current.rotation.y, y + hoverX * 0.63 + time.current * 0.12, 6, dt);
+    points.current.rotation.y = MathUtils.damp(points.current.rotation.y, y + hoverX * 0.63 + time.current * 0.12 + scroll * 0.92, 6, dt);
     uniforms.uTime.value = time.current;
     uniforms.uScale.value = gl.getPixelRatio();
+    uniforms.uScroll.value = scroll;
     if (initial) onReady(true);
   });
 
@@ -76,11 +81,11 @@ function ParticleSphere({ compact, rotation, onReady }) {
   </points>;
 }
 
-export default function OrbScene({ active, compact, rotation, onReady }) {
+export default function OrbScene({ active, compact, rotation, scrollProgress, onReady }) {
   useEffect(() => () => onReady(false), [onReady]);
 
   return <Canvas camera={{ position: [0, 0, 6.2], fov: 42 }} dpr={[1, compact ? 1.2 : 1.55]}
     frameloop={active ? 'always' : 'never'} gl={{ alpha: true, antialias: false, powerPreference: 'low-power' }} fallback={null}>
-    <ParticleSphere compact={compact} rotation={rotation} onReady={onReady}/>
+    <ParticleSphere compact={compact} rotation={rotation} scrollProgress={scrollProgress} onReady={onReady}/>
   </Canvas>;
 }

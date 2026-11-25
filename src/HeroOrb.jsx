@@ -4,7 +4,7 @@ import SceneBoundary from './SceneBoundary.jsx';
 
 const OrbScene = lazy(() => import('./OrbScene.jsx'));
 
-export default function HeroOrb({ motion }) {
+export default function HeroOrb({ motion, scrollProgress }) {
   const frame = useRef(null);
   const drag = useRef(null);
   const rotation = useRef({ x: -0.17, y: 0.18, hoverX: 0, hoverY: 0 });
@@ -55,7 +55,7 @@ export default function HeroOrb({ motion }) {
   return <div ref={frame} className="hero-orb" data-ready={interactive} aria-hidden={interactive ? undefined : true}>
     <div className="orb-fallback" aria-hidden="true"/>
     {motion && near && <div className="orb-canvas" aria-hidden="true"><SceneBoundary onFailure={() => setReady(false)}>
-      <Suspense fallback={null}><OrbScene active={active} compact={compact} rotation={rotation} onReady={setReady}/></Suspense>
+      <Suspense fallback={null}><OrbScene active={active} compact={compact} rotation={rotation} scrollProgress={scrollProgress} onReady={setReady}/></Suspense>
     </SceneBoundary></div>}
     {interactive && <>
       <div className="orb-control" tabIndex={0} role="group" aria-label="Rotate the 3D orb with the arrow keys"

@@ -1,12 +1,13 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { Fragment, lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Github, Linkedin, Menu, Pause, Play, X } from 'lucide-react';
 import { useMedia } from './viewport.js';
 import { github, linkedin } from './data.js';
 import HeroOrb from './HeroOrb.jsx';
-import HomeAssembly from './HomeAssembly.jsx';
 
 const Lower = lazy(() => import('./Lower.jsx'));
 const pages = [['Work', 'work'], ['Stack', 'skills'], ['About', 'about'], ['Contact', 'contact']];
+
+const introWords = 'I build full-stack applications with React and Node.js, from student platforms to voice AI.'.split(' ');
 
 function Brand() {
   return <a className="brand" href="#home" aria-label="Ali Bakhtiyar home">
@@ -43,6 +44,7 @@ function MobileMenu({ dialog }) {
 export default function App() {
   const root = useRef(null);
   const menu = useRef(null);
+  const orbProgress = useRef(0);
   const [allowMotion, setAllowMotion] = useState(true);
   const reduced = useMedia('(prefers-reduced-motion: reduce)');
   const compact = useMedia('(max-width: 720px)');
@@ -57,7 +59,7 @@ export default function App() {
     let dispose;
     let cancelled = false;
     import('./motion.js').then(({ animateHero }) => {
-      if (!cancelled) dispose = animateHero(root.current);
+      if (!cancelled) dispose = animateHero(root.current, orbProgress);
     }).catch(() => {});
     return () => { cancelled = true; dispose?.(); };
   }, [motion]);
@@ -78,22 +80,22 @@ export default function App() {
     <main id="main" tabIndex={-1}>
       <section id="home" className="hero shell" aria-labelledby="hero-title">
         <div className="hero-media" aria-hidden="true"/>
-        <HeroOrb motion={motion}/>
+        <HeroOrb motion={motion} scrollProgress={orbProgress}/>
         <div className="hero-copy">
           <p className="hero-role intro">Full-stack developer</p>
           <h1 id="hero-title" className="hero-name intro" aria-label="Ali Bakhtiyar"><span className="shery-name" aria-hidden="true">Ali Bakhtiyar</span></h1>
-          <p className="hero-detail intro">I build full-stack applications with React and Node.js, from student platforms to voice AI.</p>
+          <p className="hero-detail">
+            {introWords.map((word, index) => <Fragment key={index}><span className="hero-word">{word}</span>{index < introWords.length - 1 && ' '}</Fragment>)}
+          </p>
           <div className="actions intro">
             <a className="button primary" href="#work"><span data-magnet>Explore my work</span></a>
             <a className="button secondary" href="#contact"><span data-magnet>Get in touch</span></a>
           </div>
-          <a className="hero-scroll intro" href="#home-assembly">Scroll to explore</a>
         </div>
         {!reduced && <button type="button" className="motion-toggle" aria-pressed={!allowMotion} onClick={() => setAllowMotion((value) => !value)}>
           {allowMotion ? <Pause size={14}/> : <Play size={14}/>} {allowMotion ? 'Pause motion' : 'Resume motion'}
         </button>}
       </section>
-      <HomeAssembly motion={motion}/>
       <Suspense fallback={<div className="shell loading-content" role="status">Loading portfolio…</div>}><Lower motion={motion}/></Suspense>
     </main>
     <footer className="shell footer"><Brand/><a href={github} target="_blank" rel="noreferrer"><Github size={17}/> GitHub</a><a href={linkedin} target="_blank" rel="noreferrer"><Linkedin size={17}/> LinkedIn</a><a href="#home">Back to top</a></footer>
