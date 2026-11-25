@@ -3,6 +3,7 @@ import { Github, Linkedin, Menu, Pause, Play, X } from 'lucide-react';
 import { useMedia } from './viewport.js';
 import { github, linkedin } from './data.js';
 import HeroOrb from './HeroOrb.jsx';
+import HomeAssembly from './HomeAssembly.jsx';
 
 const Lower = lazy(() => import('./Lower.jsx'));
 const pages = [['Work', 'work'], ['Stack', 'skills'], ['About', 'about'], ['Contact', 'contact']];
@@ -26,7 +27,7 @@ function MobileMenu({ dialog }) {
   }
 
   return <dialog className="mobile-menu" id="mobile-navigation" ref={dialog} aria-label="Site menu">
-    <div className="mobile-menu-head"><strong>Ali Bakhtiyar</strong>
+    <div className="mobile-menu-head"><div className="brand"><img className="brand-mark" src="/favicon.svg" width="36" height="36" alt=""/><strong>Ali Bakhtiyar</strong></div>
       <button autoFocus type="button" className="menu-button" onClick={() => dialog.current.close()}><X size={20}/> Close</button>
     </div>
     <nav aria-label="Mobile navigation">
@@ -86,11 +87,13 @@ export default function App() {
             <a className="button primary" href="#work"><span data-magnet>Explore my work</span></a>
             <a className="button secondary" href="#contact"><span data-magnet>Get in touch</span></a>
           </div>
+          <a className="hero-scroll intro" href="#home-assembly">Scroll to explore</a>
         </div>
         {!reduced && <button type="button" className="motion-toggle" aria-pressed={!allowMotion} onClick={() => setAllowMotion((value) => !value)}>
           {allowMotion ? <Pause size={14}/> : <Play size={14}/>} {allowMotion ? 'Pause motion' : 'Resume motion'}
         </button>}
       </section>
+      <HomeAssembly motion={motion}/>
       <Suspense fallback={<div className="shell loading-content" role="status">Loading portfolio…</div>}><Lower motion={motion}/></Suspense>
     </main>
     <footer className="shell footer"><Brand/><a href={github} target="_blank" rel="noreferrer"><Github size={17}/> GitHub</a><a href={linkedin} target="_blank" rel="noreferrer"><Linkedin size={17}/> LinkedIn</a><a href="#home">Back to top</a></footer>
